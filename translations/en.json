@@ -1,0 +1,85 @@
+{
+  "app": {
+    "title": "Dental Clinic Management System",
+    "version": "Version"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "username": "Username",
+    "password": "Password",
+    "email": "Email",
+    "forgot_password": "Forgot Password?",
+    "invalid_credentials": "Invalid username or password",
+    "login_success": "Login successful"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "revenue": "Revenue",
+    "appointments": "Appointments",
+    "patients": "Patients",
+    "today": "Today",
+    "this_week": "This Week",
+    "this_month": "This Month",
+    "recent_appointments": "Recent Appointments",
+    "pending_tasks": "Pending Tasks",
+    "quick_actions": "Quick Actions"
+  },
+  "clients": {
+    "title": "Clients",
+    "add_client": "Add Client",
+    "edit_client": "Edit Client",
+    "delete_client": "Delete Client",
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "phone": "Phone",
+    "email": "Email",
+    "date_of_birth": "Date of Birth",
+    "address": "Address",
+    "medical_history": "Medical History",
+    "notes": "Notes"
+  },
+  "appointments": {
+    "title": "Appointments",
+    "new_appointment": "New Appointment",
+    "edit_appointment": "Edit Appointment",
+    "cancel_appointment": "Cancel Appointment",
+    "client": "Client",
+    "doctor": "Doctor",
+    "room": "Room",
+    "date": "Date",
+    "time": "Time",
+    "status": "Status",
+    "notes": "Notes"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "import": "Import",
+    "print": "Print",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "info": "Information"
+  },
+  "status": {
+    "online": "Online",
+    "offline": "Offline",
+    "syncing": "Syncing",
+    "synced": "Synced",
+    "pending": "Pending",
+    "error": "Error"
+  }
+}
+
