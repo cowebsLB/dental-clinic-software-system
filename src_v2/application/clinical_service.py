@@ -76,3 +76,29 @@ class ClinicalService:
             return Result.success(clinical_note)
         except Exception as exc:
             return Result.failure(str(exc))
+
+    def list_prescriptions_for_patient(
+        self,
+        actor_role: str,
+        patient_id: str,
+        limit: int = 100,
+    ) -> Result[list[Prescription]]:
+        try:
+            assert_permission(actor_role, "appointments:read")
+            require_non_empty(patient_id, "patient_id")
+            return Result.success(self._prescriptions.list_by_patient(patient_id, limit=limit))
+        except Exception as exc:
+            return Result.failure(str(exc))
+
+    def list_clinical_notes_for_patient(
+        self,
+        actor_role: str,
+        patient_id: str,
+        limit: int = 100,
+    ) -> Result[list[ClinicalNote]]:
+        try:
+            assert_permission(actor_role, "appointments:read")
+            require_non_empty(patient_id, "patient_id")
+            return Result.success(self._notes.list_by_patient(patient_id, limit=limit))
+        except Exception as exc:
+            return Result.failure(str(exc))

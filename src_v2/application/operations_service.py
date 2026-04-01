@@ -78,3 +78,24 @@ class OperationsService:
             return Result.success(item)
         except Exception as exc:
             return Result.failure(str(exc))
+
+    def list_doctors(self, actor_role: str, limit: int = 100) -> Result[list[Doctor]]:
+        try:
+            assert_permission(actor_role, "appointments:read")
+            return Result.success(self._doctors.list_all(limit=limit))
+        except Exception as exc:
+            return Result.failure(str(exc))
+
+    def list_rooms(self, actor_role: str, limit: int = 100) -> Result[list[Room]]:
+        try:
+            assert_permission(actor_role, "appointments:read")
+            return Result.success(self._rooms.list_all(limit=limit))
+        except Exception as exc:
+            return Result.failure(str(exc))
+
+    def list_equipment(self, actor_role: str, limit: int = 100) -> Result[list[Equipment]]:
+        try:
+            assert_permission(actor_role, "appointments:read")
+            return Result.success(self._equipment.list_all(limit=limit))
+        except Exception as exc:
+            return Result.failure(str(exc))

@@ -284,6 +284,28 @@ class SqliteDoctorRepository(DoctorRepository):
         )
         self._conn.commit()
 
+    def list_all(self, limit: int = 100) -> list[Doctor]:
+        rows = self._conn.execute(
+            """
+            SELECT id, name, specialization, is_active, created_at, updated_at
+            FROM doctors
+            ORDER BY created_at DESC
+            LIMIT ?
+            """,
+            (limit,),
+        ).fetchall()
+        return [
+            Doctor(
+                id=row["id"],
+                name=row["name"],
+                specialization=row["specialization"],
+                is_active=bool(row["is_active"]),
+                created_at=_from_iso(row["created_at"]),
+                updated_at=_from_iso(row["updated_at"]),
+            )
+            for row in rows
+        ]
+
 
 class SqliteRoomRepository(RoomRepository):
     def __init__(self, conn: sqlite3.Connection):
@@ -306,6 +328,28 @@ class SqliteRoomRepository(RoomRepository):
         )
         self._conn.commit()
 
+    def list_all(self, limit: int = 100) -> list[Room]:
+        rows = self._conn.execute(
+            """
+            SELECT id, room_number, room_type, is_available, created_at, updated_at
+            FROM rooms
+            ORDER BY created_at DESC
+            LIMIT ?
+            """,
+            (limit,),
+        ).fetchall()
+        return [
+            Room(
+                id=row["id"],
+                room_number=row["room_number"],
+                room_type=row["room_type"],
+                is_available=bool(row["is_available"]),
+                created_at=_from_iso(row["created_at"]),
+                updated_at=_from_iso(row["updated_at"]),
+            )
+            for row in rows
+        ]
+
 
 class SqliteEquipmentRepository(EquipmentRepository):
     def __init__(self, conn: sqlite3.Connection):
@@ -327,6 +371,28 @@ class SqliteEquipmentRepository(EquipmentRepository):
             ),
         )
         self._conn.commit()
+
+    def list_all(self, limit: int = 100) -> list[Equipment]:
+        rows = self._conn.execute(
+            """
+            SELECT id, name, equipment_type, status, created_at, updated_at
+            FROM equipment
+            ORDER BY created_at DESC
+            LIMIT ?
+            """,
+            (limit,),
+        ).fetchall()
+        return [
+            Equipment(
+                id=row["id"],
+                name=row["name"],
+                equipment_type=row["equipment_type"],
+                status=row["status"],
+                created_at=_from_iso(row["created_at"]),
+                updated_at=_from_iso(row["updated_at"]),
+            )
+            for row in rows
+        ]
 
 
 class SqlitePrescriptionRepository(PrescriptionRepository):
@@ -352,6 +418,31 @@ class SqlitePrescriptionRepository(PrescriptionRepository):
         )
         self._conn.commit()
 
+    def list_by_patient(self, patient_id: str, limit: int = 100) -> list[Prescription]:
+        rows = self._conn.execute(
+            """
+            SELECT id, patient_id, doctor_id, medication, dosage, instructions, created_at, updated_at
+            FROM prescriptions
+            WHERE patient_id = ?
+            ORDER BY created_at DESC
+            LIMIT ?
+            """,
+            (patient_id, limit),
+        ).fetchall()
+        return [
+            Prescription(
+                id=row["id"],
+                patient_id=row["patient_id"],
+                doctor_id=row["doctor_id"],
+                medication=row["medication"],
+                dosage=row["dosage"],
+                instructions=row["instructions"],
+                created_at=_from_iso(row["created_at"]),
+                updated_at=_from_iso(row["updated_at"]),
+            )
+            for row in rows
+        ]
+
 
 class SqliteClinicalNoteRepository(ClinicalNoteRepository):
     def __init__(self, conn: sqlite3.Connection):
@@ -373,6 +464,29 @@ class SqliteClinicalNoteRepository(ClinicalNoteRepository):
             ),
         )
         self._conn.commit()
+
+    def list_by_patient(self, patient_id: str, limit: int = 100) -> list[ClinicalNote]:
+        rows = self._conn.execute(
+            """
+            SELECT id, patient_id, doctor_id, note, created_at, updated_at
+            FROM clinical_notes
+            WHERE patient_id = ?
+            ORDER BY created_at DESC
+            LIMIT ?
+            """,
+            (patient_id, limit),
+        ).fetchall()
+        return [
+            ClinicalNote(
+                id=row["id"],
+                patient_id=row["patient_id"],
+                doctor_id=row["doctor_id"],
+                note=row["note"],
+                created_at=_from_iso(row["created_at"]),
+                updated_at=_from_iso(row["updated_at"]),
+            )
+            for row in rows
+        ]
 
 
 class SqliteInsuranceClaimRepository(InsuranceClaimRepository):
@@ -397,3 +511,28 @@ class SqliteInsuranceClaimRepository(InsuranceClaimRepository):
             ),
         )
         self._conn.commit()
+
+    def list_by_patient(self, patient_id: str, limit: int = 100) -> list[InsuranceClaim]:
+        rows = self._conn.execute(
+            """
+            SELECT id, patient_id, provider_name, claim_number, amount, status, created_at, updated_at
+            FROM insurance_claims
+            WHERE patient_id = ?
+            ORDER BY created_at DESC
+            LIMIT ?
+            """,
+            (patient_id, limit),
+        ).fetchall()
+        return [
+            InsuranceClaim(
+                id=row["id"],
+                patient_id=row["patient_id"],
+                provider_name=row["provider_name"],
+                claim_number=row["claim_number"],
+                amount=float(row["amount"]),
+                status=row["status"],
+                created_at=_from_iso(row["created_at"]),
+                updated_at=_from_iso(row["updated_at"]),
+            )
+            for row in rows
+        ]

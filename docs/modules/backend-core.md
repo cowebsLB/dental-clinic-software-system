@@ -45,3 +45,15 @@
   - dashboard metrics for totals and outstanding invoices
 - Purpose:
   - provide stable backend read contracts for upcoming UI/UX modernization.
+
+## Secondary Module Query Coverage
+
+- OperationsService read contracts:
+  - `list_doctors`
+  - `list_rooms`
+  - `list_equipment`
+- ClinicalService read contracts:
+  - `list_prescriptions_for_patient`
+  - `list_clinical_notes_for_patient`
+- InsuranceService read contracts:
+  - `list_claims_for_patient`

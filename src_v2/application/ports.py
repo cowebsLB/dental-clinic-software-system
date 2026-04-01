@@ -80,10 +80,18 @@ class DoctorRepository(ABC):
     def create(self, doctor: Doctor) -> None:
         raise NotImplementedError
 
+    @abstractmethod
+    def list_all(self, limit: int = 100) -> list[Doctor]:
+        raise NotImplementedError
+
 
 class RoomRepository(ABC):
     @abstractmethod
     def create(self, room: Room) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def list_all(self, limit: int = 100) -> list[Room]:
         raise NotImplementedError
 
 
@@ -92,10 +100,18 @@ class EquipmentRepository(ABC):
     def create(self, equipment: Equipment) -> None:
         raise NotImplementedError
 
+    @abstractmethod
+    def list_all(self, limit: int = 100) -> list[Equipment]:
+        raise NotImplementedError
+
 
 class PrescriptionRepository(ABC):
     @abstractmethod
     def create(self, prescription: Prescription) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def list_by_patient(self, patient_id: str, limit: int = 100) -> list[Prescription]:
         raise NotImplementedError
 
 
@@ -104,8 +120,16 @@ class ClinicalNoteRepository(ABC):
     def create(self, note: ClinicalNote) -> None:
         raise NotImplementedError
 
+    @abstractmethod
+    def list_by_patient(self, patient_id: str, limit: int = 100) -> list[ClinicalNote]:
+        raise NotImplementedError
+
 
 class InsuranceClaimRepository(ABC):
     @abstractmethod
     def create(self, claim: InsuranceClaim) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def list_by_patient(self, patient_id: str, limit: int = 100) -> list[InsuranceClaim]:
         raise NotImplementedError

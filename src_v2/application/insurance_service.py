@@ -43,3 +43,16 @@ class InsuranceService:
             return Result.success(claim)
         except Exception as exc:
             return Result.failure(str(exc))
+
+    def list_claims_for_patient(
+        self,
+        actor_role: str,
+        patient_id: str,
+        limit: int = 100,
+    ) -> Result[list[InsuranceClaim]]:
+        try:
+            assert_permission(actor_role, "billing:read")
+            require_non_empty(patient_id, "patient_id")
+            return Result.success(self._claims.list_by_patient(patient_id, limit=limit))
+        except Exception as exc:
+            return Result.failure(str(exc))
