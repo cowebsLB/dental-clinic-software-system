@@ -1,5 +1,5 @@
 import sqlite3
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Optional
 
 from src_v2.application.ports import (
@@ -663,7 +663,7 @@ class SqliteSyncQueueRepository(SyncQueueRepository):
     def mark_synced(self, job_id: str) -> bool:
         cursor = self._conn.execute(
             "UPDATE sync_jobs SET status = 'synced', updated_at = ? WHERE id = ?",
-            (_iso(datetime.now()), job_id),
+            (_iso(datetime.now(UTC)), job_id),
         )
         self._conn.commit()
         return cursor.rowcount > 0
@@ -675,7 +675,7 @@ class SqliteSyncQueueRepository(SyncQueueRepository):
             SET status = 'pending', retry_count = retry_count + 1, last_error = ?, updated_at = ?
             WHERE id = ?
             """,
-            (error, _iso(datetime.now()), job_id),
+            (error, _iso(datetime.now(UTC)), job_id),
         )
         self._conn.commit()
         return cursor.rowcount > 0
