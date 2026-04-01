@@ -1,0 +1,37 @@
+# Backend Core Modules (v2)
+
+## Auth and Roles
+
+- `src_v2/application/auth_service.py`
+- `src_v2/application/policy.py`
+- Role model: `admin`, `doctor`, `staff`, `receptionist`
+
+## Patients
+
+- Service: `src_v2/application/patient_service.py`
+- Repository contract: `PatientRepository`
+
+## Appointments
+
+- Service: `src_v2/application/appointment_service.py`
+- Repository contract: `AppointmentRepository`
+
+## Billing
+
+- Service: `src_v2/application/billing_service.py`
+- Repository contract: `InvoiceRepository`
+
+## Operations (Secondary Backend Phase)
+
+- Service: `src_v2/application/operations_service.py`
+- Repository contracts: `DoctorRepository`, `RoomRepository`, `EquipmentRepository`
+
+## Clinical + Insurance (Secondary Backend Phase)
+
+- Services:
+  - `src_v2/application/clinical_service.py`
+  - `src_v2/application/insurance_service.py`
+- Repository contracts:
+  - `PrescriptionRepository`
+  - `ClinicalNoteRepository`
+  - `InsuranceClaimRepository`

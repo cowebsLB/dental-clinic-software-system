@@ -1,0 +1,317 @@
+import sqlite3
+from datetime import datetime
+from typing import Optional
+
+from src_v2.application.ports import (
+    AppointmentRepository,
+    ClinicalNoteRepository,
+    DoctorRepository,
+    EquipmentRepository,
+    InsuranceClaimRepository,
+    InvoiceRepository,
+    PatientRepository,
+    PrescriptionRepository,
+    RoomRepository,
+    UserRepository,
+)
+from src_v2.domain.models import (
+    Appointment,
+    ClinicalNote,
+    Doctor,
+    Equipment,
+    InsuranceClaim,
+    Invoice,
+    Patient,
+    Prescription,
+    Room,
+    User,
+)
+
+
+def _iso(dt: datetime) -> str:
+    return dt.isoformat()
+
+
+def _from_iso(raw: str) -> datetime:
+    return datetime.fromisoformat(raw)
+
+
+class SqliteUserRepository(UserRepository):
+    def __init__(self, conn: sqlite3.Connection):
+        self._conn = conn
+
+    def get_by_username(self, username: str) -> Optional[User]:
+        row = self._conn.execute(
+            "SELECT id, username, password_hash, role, is_active FROM users WHERE username = ?",
+            (username,),
+        ).fetchone()
+        if not row:
+            return None
+        return User(
+            id=row["id"],
+            username=row["username"],
+            password_hash=row["password_hash"],
+            role=row["role"],
+            is_active=bool(row["is_active"]),
+        )
+
+
+class SqlitePatientRepository(PatientRepository):
+    def __init__(self, conn: sqlite3.Connection):
+        self._conn = conn
+
+    def create(self, patient: Patient) -> None:
+        self._conn.execute(
+            """
+            INSERT INTO patients (id, first_name, last_name, phone, email, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                patient.id,
+                patient.first_name,
+                patient.last_name,
+                patient.phone,
+                patient.email,
+                _iso(patient.created_at),
+                _iso(patient.updated_at),
+            ),
+        )
+        self._conn.commit()
+
+    def get(self, patient_id: str) -> Optional[Patient]:
+        row = self._conn.execute(
+            "SELECT id, first_name, last_name, phone, email, created_at, updated_at FROM patients WHERE id = ?",
+            (patient_id,),
+        ).fetchone()
+        if not row:
+            return None
+        return Patient(
+            id=row["id"],
+            first_name=row["first_name"],
+            last_name=row["last_name"],
+            phone=row["phone"],
+            email=row["email"],
+            created_at=_from_iso(row["created_at"]),
+            updated_at=_from_iso(row["updated_at"]),
+        )
+
+
+class SqliteAppointmentRepository(AppointmentRepository):
+    def __init__(self, conn: sqlite3.Connection):
+        self._conn = conn
+
+    def create(self, appointment: Appointment) -> None:
+        self._conn.execute(
+            """
+            INSERT INTO appointments (id, patient_id, doctor_id, appointment_at, status, notes, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                appointment.id,
+                appointment.patient_id,
+                appointment.doctor_id,
+                _iso(appointment.appointment_at),
+                appointment.status,
+                appointment.notes,
+                _iso(appointment.created_at),
+                _iso(appointment.updated_at),
+            ),
+        )
+        self._conn.commit()
+
+    def get(self, appointment_id: str) -> Optional[Appointment]:
+        row = self._conn.execute(
+            """
+            SELECT id, patient_id, doctor_id, appointment_at, status, notes, created_at, updated_at
+            FROM appointments WHERE id = ?
+            """,
+            (appointment_id,),
+        ).fetchone()
+        if not row:
+            return None
+        return Appointment(
+            id=row["id"],
+            patient_id=row["patient_id"],
+            doctor_id=row["doctor_id"],
+            appointment_at=_from_iso(row["appointment_at"]),
+            status=row["status"],
+            notes=row["notes"],
+            created_at=_from_iso(row["created_at"]),
+            updated_at=_from_iso(row["updated_at"]),
+        )
+
+
+class SqliteInvoiceRepository(InvoiceRepository):
+    def __init__(self, conn: sqlite3.Connection):
+        self._conn = conn
+
+    def create(self, invoice: Invoice) -> None:
+        self._conn.execute(
+            """
+            INSERT INTO invoices (id, patient_id, appointment_id, amount, status, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                invoice.id,
+                invoice.patient_id,
+                invoice.appointment_id,
+                invoice.amount,
+                invoice.status,
+                _iso(invoice.created_at),
+                _iso(invoice.updated_at),
+            ),
+        )
+        self._conn.commit()
+
+    def get(self, invoice_id: str) -> Optional[Invoice]:
+        row = self._conn.execute(
+            "SELECT id, patient_id, appointment_id, amount, status, created_at, updated_at FROM invoices WHERE id = ?",
+            (invoice_id,),
+        ).fetchone()
+        if not row:
+            return None
+        return Invoice(
+            id=row["id"],
+            patient_id=row["patient_id"],
+            appointment_id=row["appointment_id"],
+            amount=float(row["amount"]),
+            status=row["status"],
+            created_at=_from_iso(row["created_at"]),
+            updated_at=_from_iso(row["updated_at"]),
+        )
+
+
+class SqliteDoctorRepository(DoctorRepository):
+    def __init__(self, conn: sqlite3.Connection):
+        self._conn = conn
+
+    def create(self, doctor: Doctor) -> None:
+        self._conn.execute(
+            """
+            INSERT INTO doctors (id, name, specialization, is_active, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                doctor.id,
+                doctor.name,
+                doctor.specialization,
+                int(doctor.is_active),
+                _iso(doctor.created_at),
+                _iso(doctor.updated_at),
+            ),
+        )
+        self._conn.commit()
+
+
+class SqliteRoomRepository(RoomRepository):
+    def __init__(self, conn: sqlite3.Connection):
+        self._conn = conn
+
+    def create(self, room: Room) -> None:
+        self._conn.execute(
+            """
+            INSERT INTO rooms (id, room_number, room_type, is_available, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                room.id,
+                room.room_number,
+                room.room_type,
+                int(room.is_available),
+                _iso(room.created_at),
+                _iso(room.updated_at),
+            ),
+        )
+        self._conn.commit()
+
+
+class SqliteEquipmentRepository(EquipmentRepository):
+    def __init__(self, conn: sqlite3.Connection):
+        self._conn = conn
+
+    def create(self, equipment: Equipment) -> None:
+        self._conn.execute(
+            """
+            INSERT INTO equipment (id, name, equipment_type, status, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                equipment.id,
+                equipment.name,
+                equipment.equipment_type,
+                equipment.status,
+                _iso(equipment.created_at),
+                _iso(equipment.updated_at),
+            ),
+        )
+        self._conn.commit()
+
+
+class SqlitePrescriptionRepository(PrescriptionRepository):
+    def __init__(self, conn: sqlite3.Connection):
+        self._conn = conn
+
+    def create(self, prescription: Prescription) -> None:
+        self._conn.execute(
+            """
+            INSERT INTO prescriptions (id, patient_id, doctor_id, medication, dosage, instructions, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                prescription.id,
+                prescription.patient_id,
+                prescription.doctor_id,
+                prescription.medication,
+                prescription.dosage,
+                prescription.instructions,
+                _iso(prescription.created_at),
+                _iso(prescription.updated_at),
+            ),
+        )
+        self._conn.commit()
+
+
+class SqliteClinicalNoteRepository(ClinicalNoteRepository):
+    def __init__(self, conn: sqlite3.Connection):
+        self._conn = conn
+
+    def create(self, note: ClinicalNote) -> None:
+        self._conn.execute(
+            """
+            INSERT INTO clinical_notes (id, patient_id, doctor_id, note, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                note.id,
+                note.patient_id,
+                note.doctor_id,
+                note.note,
+                _iso(note.created_at),
+                _iso(note.updated_at),
+            ),
+        )
+        self._conn.commit()
+
+
+class SqliteInsuranceClaimRepository(InsuranceClaimRepository):
+    def __init__(self, conn: sqlite3.Connection):
+        self._conn = conn
+
+    def create(self, claim: InsuranceClaim) -> None:
+        self._conn.execute(
+            """
+            INSERT INTO insurance_claims (id, patient_id, provider_name, claim_number, amount, status, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                claim.id,
+                claim.patient_id,
+                claim.provider_name,
+                claim.claim_number,
+                claim.amount,
+                claim.status,
+                _iso(claim.created_at),
+                _iso(claim.updated_at),
+            ),
+        )
+        self._conn.commit()
