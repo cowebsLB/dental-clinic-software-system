@@ -311,7 +311,7 @@ class SqliteDoctorRepository(DoctorRepository):
     def set_active(self, doctor_id: str, is_active: bool) -> bool:
         cursor = self._conn.execute(
             "UPDATE doctors SET is_active = ?, updated_at = ? WHERE id = ?",
-            (int(is_active), _iso(datetime.now()), doctor_id),
+            (int(is_active), _iso(datetime.now(UTC)), doctor_id),
         )
         self._conn.commit()
         return cursor.rowcount > 0
@@ -368,7 +368,7 @@ class SqliteRoomRepository(RoomRepository):
     def set_availability(self, room_id: str, is_available: bool) -> bool:
         cursor = self._conn.execute(
             "UPDATE rooms SET is_available = ?, updated_at = ? WHERE id = ?",
-            (int(is_available), _iso(datetime.now()), room_id),
+            (int(is_available), _iso(datetime.now(UTC)), room_id),
         )
         self._conn.commit()
         return cursor.rowcount > 0
@@ -425,7 +425,7 @@ class SqliteEquipmentRepository(EquipmentRepository):
     def set_status(self, equipment_id: str, status: str) -> bool:
         cursor = self._conn.execute(
             "UPDATE equipment SET status = ?, updated_at = ? WHERE id = ?",
-            (status, _iso(datetime.now()), equipment_id),
+            (status, _iso(datetime.now(UTC)), equipment_id),
         )
         self._conn.commit()
         return cursor.rowcount > 0
@@ -591,7 +591,7 @@ class SqliteInsuranceClaimRepository(InsuranceClaimRepository):
     def set_status(self, claim_id: str, status: str) -> bool:
         cursor = self._conn.execute(
             "UPDATE insurance_claims SET status = ?, updated_at = ? WHERE id = ?",
-            (status, _iso(datetime.now()), claim_id),
+            (status, _iso(datetime.now(UTC)), claim_id),
         )
         self._conn.commit()
         return cursor.rowcount > 0
