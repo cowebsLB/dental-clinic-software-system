@@ -84,7 +84,7 @@ class ClinicalService:
         limit: int = 100,
     ) -> Result[list[Prescription]]:
         try:
-            assert_permission(actor_role, "appointments:read")
+            assert_permission(actor_role, "clinical:read")
             require_non_empty(patient_id, "patient_id")
             return Result.success(self._prescriptions.list_by_patient(patient_id, limit=limit))
         except Exception as exc:
@@ -97,8 +97,24 @@ class ClinicalService:
         limit: int = 100,
     ) -> Result[list[ClinicalNote]]:
         try:
-            assert_permission(actor_role, "appointments:read")
+            assert_permission(actor_role, "clinical:read")
             require_non_empty(patient_id, "patient_id")
             return Result.success(self._notes.list_by_patient(patient_id, limit=limit))
+        except Exception as exc:
+            return Result.failure(str(exc))
+
+    def delete_prescription(self, actor_role: str, prescription_id: str) -> Result[bool]:
+        try:
+            assert_permission(actor_role, "clinical:write")
+            require_non_empty(prescription_id, "prescription_id")
+            return Result.success(self._prescriptions.delete(prescription_id))
+        except Exception as exc:
+            return Result.failure(str(exc))
+
+    def delete_clinical_note(self, actor_role: str, note_id: str) -> Result[bool]:
+        try:
+            assert_permission(actor_role, "clinical:write")
+            require_non_empty(note_id, "note_id")
+            return Result.success(self._notes.delete(note_id))
         except Exception as exc:
             return Result.failure(str(exc))

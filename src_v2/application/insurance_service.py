@@ -56,3 +56,20 @@ class InsuranceService:
             return Result.success(self._claims.list_by_patient(patient_id, limit=limit))
         except Exception as exc:
             return Result.failure(str(exc))
+
+    def set_claim_status(self, actor_role: str, claim_id: str, status: str) -> Result[bool]:
+        try:
+            assert_permission(actor_role, "billing:write")
+            require_non_empty(claim_id, "claim_id")
+            require_non_empty(status, "status")
+            return Result.success(self._claims.set_status(claim_id, status.strip()))
+        except Exception as exc:
+            return Result.failure(str(exc))
+
+    def delete_claim(self, actor_role: str, claim_id: str) -> Result[bool]:
+        try:
+            assert_permission(actor_role, "billing:write")
+            require_non_empty(claim_id, "claim_id")
+            return Result.success(self._claims.delete(claim_id))
+        except Exception as exc:
+            return Result.failure(str(exc))

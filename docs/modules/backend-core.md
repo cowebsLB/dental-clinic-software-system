@@ -57,3 +57,13 @@
   - `list_clinical_notes_for_patient`
 - InsuranceService read contracts:
   - `list_claims_for_patient`
+
+## Secondary Module CRUD Coverage
+
+- OperationsService write/update/delete contracts:
+  - `set_doctor_active`, `set_room_availability`, `set_equipment_status`
+  - `delete_doctor`, `delete_room`, `delete_equipment`
+- ClinicalService delete contracts:
+  - `delete_prescription`, `delete_clinical_note`
+- InsuranceService write/delete contracts:
+  - `set_claim_status`, `delete_claim`

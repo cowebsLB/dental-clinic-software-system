@@ -84,6 +84,14 @@ class DoctorRepository(ABC):
     def list_all(self, limit: int = 100) -> list[Doctor]:
         raise NotImplementedError
 
+    @abstractmethod
+    def set_active(self, doctor_id: str, is_active: bool) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def delete(self, doctor_id: str) -> bool:
+        raise NotImplementedError
+
 
 class RoomRepository(ABC):
     @abstractmethod
@@ -92,6 +100,14 @@ class RoomRepository(ABC):
 
     @abstractmethod
     def list_all(self, limit: int = 100) -> list[Room]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def set_availability(self, room_id: str, is_available: bool) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def delete(self, room_id: str) -> bool:
         raise NotImplementedError
 
 
@@ -104,6 +120,14 @@ class EquipmentRepository(ABC):
     def list_all(self, limit: int = 100) -> list[Equipment]:
         raise NotImplementedError
 
+    @abstractmethod
+    def set_status(self, equipment_id: str, status: str) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def delete(self, equipment_id: str) -> bool:
+        raise NotImplementedError
+
 
 class PrescriptionRepository(ABC):
     @abstractmethod
@@ -112,6 +136,10 @@ class PrescriptionRepository(ABC):
 
     @abstractmethod
     def list_by_patient(self, patient_id: str, limit: int = 100) -> list[Prescription]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def delete(self, prescription_id: str) -> bool:
         raise NotImplementedError
 
 
@@ -124,6 +152,10 @@ class ClinicalNoteRepository(ABC):
     def list_by_patient(self, patient_id: str, limit: int = 100) -> list[ClinicalNote]:
         raise NotImplementedError
 
+    @abstractmethod
+    def delete(self, note_id: str) -> bool:
+        raise NotImplementedError
+
 
 class InsuranceClaimRepository(ABC):
     @abstractmethod
@@ -132,4 +164,12 @@ class InsuranceClaimRepository(ABC):
 
     @abstractmethod
     def list_by_patient(self, patient_id: str, limit: int = 100) -> list[InsuranceClaim]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def set_status(self, claim_id: str, status: str) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def delete(self, claim_id: str) -> bool:
         raise NotImplementedError
