@@ -118,3 +118,18 @@ class InsuranceClaim:
     status: str
     created_at: datetime
     updated_at: datetime
+
+
+@dataclass(frozen=True)
+class SyncJob:
+    id: str
+    entity_type: str
+    entity_id: str
+    operation: str
+    payload_json: str
+    idempotency_key: str
+    status: str
+    retry_count: int
+    last_error: str
+    created_at: datetime
+    updated_at: datetime
