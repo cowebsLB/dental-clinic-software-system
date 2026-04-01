@@ -30,6 +30,14 @@ class PatientRepository(ABC):
     def get(self, patient_id: str) -> Optional[Patient]:
         raise NotImplementedError
 
+    @abstractmethod
+    def list_all(self, limit: int = 100) -> list[Patient]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def count_all(self) -> int:
+        raise NotImplementedError
+
 
 class AppointmentRepository(ABC):
     @abstractmethod
@@ -40,6 +48,14 @@ class AppointmentRepository(ABC):
     def get(self, appointment_id: str) -> Optional[Appointment]:
         raise NotImplementedError
 
+    @abstractmethod
+    def list_all(self, limit: int = 100) -> list[Appointment]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def count_all(self) -> int:
+        raise NotImplementedError
+
 
 class InvoiceRepository(ABC):
     @abstractmethod
@@ -48,6 +64,14 @@ class InvoiceRepository(ABC):
 
     @abstractmethod
     def get(self, invoice_id: str) -> Optional[Invoice]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def list_all(self, limit: int = 100) -> list[Invoice]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def count_all(self) -> int:
         raise NotImplementedError
 
 

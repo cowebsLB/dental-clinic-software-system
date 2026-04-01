@@ -8,6 +8,7 @@ from src_v2.application.clinical_service import ClinicalService
 from src_v2.application.insurance_service import InsuranceService
 from src_v2.application.operations_service import OperationsService
 from src_v2.application.patient_service import PatientService
+from src_v2.application.query_service import QueryService
 from src_v2.infrastructure.bootstrap import ensure_default_admin
 from src_v2.infrastructure.sqlite_connection import connect
 from src_v2.infrastructure.sqlite_repositories import (
@@ -35,6 +36,7 @@ class ServiceContainer:
     operations_service: OperationsService
     clinical_service: ClinicalService
     insurance_service: InsuranceService
+    query_service: QueryService
 
     def close(self) -> None:
         self.connection.close()
@@ -65,4 +67,5 @@ def build_services(db_path: str) -> ServiceContainer:
         operations_service=OperationsService(doctors, rooms, equipment),
         clinical_service=ClinicalService(prescriptions, clinical_notes, patients),
         insurance_service=InsuranceService(insurance_claims, patients),
+        query_service=QueryService(patients, appointments, invoices),
     )

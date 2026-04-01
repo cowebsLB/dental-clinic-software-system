@@ -95,6 +95,33 @@ class SqlitePatientRepository(PatientRepository):
             updated_at=_from_iso(row["updated_at"]),
         )
 
+    def list_all(self, limit: int = 100) -> list[Patient]:
+        rows = self._conn.execute(
+            """
+            SELECT id, first_name, last_name, phone, email, created_at, updated_at
+            FROM patients
+            ORDER BY created_at DESC
+            LIMIT ?
+            """,
+            (limit,),
+        ).fetchall()
+        return [
+            Patient(
+                id=row["id"],
+                first_name=row["first_name"],
+                last_name=row["last_name"],
+                phone=row["phone"],
+                email=row["email"],
+                created_at=_from_iso(row["created_at"]),
+                updated_at=_from_iso(row["updated_at"]),
+            )
+            for row in rows
+        ]
+
+    def count_all(self) -> int:
+        row = self._conn.execute("SELECT COUNT(*) AS count FROM patients").fetchone()
+        return int(row["count"]) if row else 0
+
 
 class SqliteAppointmentRepository(AppointmentRepository):
     def __init__(self, conn: sqlite3.Connection):
@@ -140,6 +167,34 @@ class SqliteAppointmentRepository(AppointmentRepository):
             updated_at=_from_iso(row["updated_at"]),
         )
 
+    def list_all(self, limit: int = 100) -> list[Appointment]:
+        rows = self._conn.execute(
+            """
+            SELECT id, patient_id, doctor_id, appointment_at, status, notes, created_at, updated_at
+            FROM appointments
+            ORDER BY appointment_at DESC
+            LIMIT ?
+            """,
+            (limit,),
+        ).fetchall()
+        return [
+            Appointment(
+                id=row["id"],
+                patient_id=row["patient_id"],
+                doctor_id=row["doctor_id"],
+                appointment_at=_from_iso(row["appointment_at"]),
+                status=row["status"],
+                notes=row["notes"],
+                created_at=_from_iso(row["created_at"]),
+                updated_at=_from_iso(row["updated_at"]),
+            )
+            for row in rows
+        ]
+
+    def count_all(self) -> int:
+        row = self._conn.execute("SELECT COUNT(*) AS count FROM appointments").fetchone()
+        return int(row["count"]) if row else 0
+
 
 class SqliteInvoiceRepository(InvoiceRepository):
     def __init__(self, conn: sqlite3.Connection):
@@ -179,6 +234,33 @@ class SqliteInvoiceRepository(InvoiceRepository):
             created_at=_from_iso(row["created_at"]),
             updated_at=_from_iso(row["updated_at"]),
         )
+
+    def list_all(self, limit: int = 100) -> list[Invoice]:
+        rows = self._conn.execute(
+            """
+            SELECT id, patient_id, appointment_id, amount, status, created_at, updated_at
+            FROM invoices
+            ORDER BY created_at DESC
+            LIMIT ?
+            """,
+            (limit,),
+        ).fetchall()
+        return [
+            Invoice(
+                id=row["id"],
+                patient_id=row["patient_id"],
+                appointment_id=row["appointment_id"],
+                amount=float(row["amount"]),
+                status=row["status"],
+                created_at=_from_iso(row["created_at"]),
+                updated_at=_from_iso(row["updated_at"]),
+            )
+            for row in rows
+        ]
+
+    def count_all(self) -> int:
+        row = self._conn.execute("SELECT COUNT(*) AS count FROM invoices").fetchone()
+        return int(row["count"]) if row else 0
 
 
 class SqliteDoctorRepository(DoctorRepository):

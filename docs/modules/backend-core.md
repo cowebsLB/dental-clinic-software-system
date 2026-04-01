@@ -35,3 +35,13 @@
   - `PrescriptionRepository`
   - `ClinicalNoteRepository`
   - `InsuranceClaimRepository`
+
+## Query Layer (Read APIs)
+
+- Service:
+  - `src_v2/application/query_service.py`
+- Capabilities:
+  - list patients/appointments/invoices
+  - dashboard metrics for totals and outstanding invoices
+- Purpose:
+  - provide stable backend read contracts for upcoming UI/UX modernization.
