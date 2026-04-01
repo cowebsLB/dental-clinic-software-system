@@ -67,3 +67,16 @@
   - `delete_prescription`, `delete_clinical_note`
 - InsuranceService write/delete contracts:
   - `set_claim_status`, `delete_claim`
+
+## Sync and Reliability Foundation
+
+- Service:
+  - `src_v2/application/sync_service.py`
+- Backing store:
+  - `sync_jobs` table in `src_v2/infrastructure/sqlite_schema.py`
+  - `SqliteSyncQueueRepository` in `src_v2/infrastructure/sqlite_repositories.py`
+- Reliability behaviors:
+  - idempotent enqueue via unique `idempotency_key`
+  - pending job listing for worker loops
+  - retry accounting (`retry_count`) and `last_error` capture
+  - status transitions (`pending` -> `synced`)

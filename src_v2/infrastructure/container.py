@@ -9,6 +9,7 @@ from src_v2.application.insurance_service import InsuranceService
 from src_v2.application.operations_service import OperationsService
 from src_v2.application.patient_service import PatientService
 from src_v2.application.query_service import QueryService
+from src_v2.application.sync_service import SyncService
 from src_v2.infrastructure.bootstrap import ensure_default_admin
 from src_v2.infrastructure.sqlite_connection import connect
 from src_v2.infrastructure.sqlite_repositories import (
@@ -21,6 +22,7 @@ from src_v2.infrastructure.sqlite_repositories import (
     SqlitePatientRepository,
     SqlitePrescriptionRepository,
     SqliteRoomRepository,
+    SqliteSyncQueueRepository,
     SqliteUserRepository,
 )
 from src_v2.infrastructure.sqlite_schema import initialize_schema
@@ -37,6 +39,7 @@ class ServiceContainer:
     clinical_service: ClinicalService
     insurance_service: InsuranceService
     query_service: QueryService
+    sync_service: SyncService
 
     def close(self) -> None:
         self.connection.close()
@@ -57,6 +60,7 @@ def build_services(db_path: str) -> ServiceContainer:
     prescriptions = SqlitePrescriptionRepository(conn)
     clinical_notes = SqliteClinicalNoteRepository(conn)
     insurance_claims = SqliteInsuranceClaimRepository(conn)
+    sync_queue = SqliteSyncQueueRepository(conn)
 
     return ServiceContainer(
         connection=conn,
@@ -68,4 +72,5 @@ def build_services(db_path: str) -> ServiceContainer:
         clinical_service=ClinicalService(prescriptions, clinical_notes, patients),
         insurance_service=InsuranceService(insurance_claims, patients),
         query_service=QueryService(patients, appointments, invoices),
+        sync_service=SyncService(sync_queue),
     )

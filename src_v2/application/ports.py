@@ -11,6 +11,7 @@ from src_v2.domain.models import (
     Patient,
     Prescription,
     Room,
+    SyncJob,
     User,
 )
 
@@ -172,4 +173,22 @@ class InsuranceClaimRepository(ABC):
 
     @abstractmethod
     def delete(self, claim_id: str) -> bool:
+        raise NotImplementedError
+
+
+class SyncQueueRepository(ABC):
+    @abstractmethod
+    def enqueue(self, job: SyncJob) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def list_pending(self, limit: int = 100) -> list[SyncJob]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def mark_synced(self, job_id: str) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def mark_failed(self, job_id: str, error: str) -> bool:
         raise NotImplementedError

@@ -12,6 +12,7 @@ from src_v2.application.ports import (
     PatientRepository,
     PrescriptionRepository,
     RoomRepository,
+    SyncQueueRepository,
     UserRepository,
 )
 from src_v2.domain.models import (
@@ -24,6 +25,7 @@ from src_v2.domain.models import (
     Patient,
     Prescription,
     Room,
+    SyncJob,
     User,
 )
 
@@ -596,5 +598,84 @@ class SqliteInsuranceClaimRepository(InsuranceClaimRepository):
 
     def delete(self, claim_id: str) -> bool:
         cursor = self._conn.execute("DELETE FROM insurance_claims WHERE id = ?", (claim_id,))
+        self._conn.commit()
+        return cursor.rowcount > 0
+
+
+class SqliteSyncQueueRepository(SyncQueueRepository):
+    def __init__(self, conn: sqlite3.Connection):
+        self._conn = conn
+
+    def enqueue(self, job: SyncJob) -> bool:
+        cursor = self._conn.execute(
+            """
+            INSERT OR IGNORE INTO sync_jobs (
+                id, entity_type, entity_id, operation, payload_json, idempotency_key,
+                status, retry_count, last_error, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                job.id,
+                job.entity_type,
+                job.entity_id,
+                job.operation,
+                job.payload_json,
+                job.idempotency_key,
+                job.status,
+                job.retry_count,
+                job.last_error,
+                _iso(job.created_at),
+                _iso(job.updated_at),
+            ),
+        )
+        self._conn.commit()
+        return cursor.rowcount > 0
+
+    def list_pending(self, limit: int = 100) -> list[SyncJob]:
+        rows = self._conn.execute(
+            """
+            SELECT id, entity_type, entity_id, operation, payload_json, idempotency_key, status,
+                   retry_count, last_error, created_at, updated_at
+            FROM sync_jobs
+            WHERE status = 'pending'
+            ORDER BY created_at ASC
+            LIMIT ?
+            """,
+            (limit,),
+        ).fetchall()
+        return [
+            SyncJob(
+                id=row["id"],
+                entity_type=row["entity_type"],
+                entity_id=row["entity_id"],
+                operation=row["operation"],
+                payload_json=row["payload_json"],
+                idempotency_key=row["idempotency_key"],
+                status=row["status"],
+                retry_count=int(row["retry_count"]),
+                last_error=row["last_error"],
+                created_at=_from_iso(row["created_at"]),
+                updated_at=_from_iso(row["updated_at"]),
+            )
+            for row in rows
+        ]
+
+    def mark_synced(self, job_id: str) -> bool:
+        cursor = self._conn.execute(
+            "UPDATE sync_jobs SET status = 'synced', updated_at = ? WHERE id = ?",
+            (_iso(datetime.now()), job_id),
+        )
+        self._conn.commit()
+        return cursor.rowcount > 0
+
+    def mark_failed(self, job_id: str, error: str) -> bool:
+        cursor = self._conn.execute(
+            """
+            UPDATE sync_jobs
+            SET status = 'pending', retry_count = retry_count + 1, last_error = ?, updated_at = ?
+            WHERE id = ?
+            """,
+            (error, _iso(datetime.now()), job_id),
+        )
         self._conn.commit()
         return cursor.rowcount > 0
