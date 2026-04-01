@@ -21,7 +21,7 @@ class OperationsService:
 
     def create_doctor(self, actor_role: str, name: str, specialization: str) -> Result[Doctor]:
         try:
-            assert_permission(actor_role, "appointments:write")
+            assert_permission(actor_role, "operations:write")
             require_non_empty(name, "name")
             now = datetime.now(UTC)
             doctor = Doctor(
@@ -39,7 +39,7 @@ class OperationsService:
 
     def create_room(self, actor_role: str, room_number: str, room_type: str) -> Result[Room]:
         try:
-            assert_permission(actor_role, "appointments:write")
+            assert_permission(actor_role, "operations:write")
             require_non_empty(room_number, "room_number")
             now = datetime.now(UTC)
             room = Room(
@@ -63,7 +63,7 @@ class OperationsService:
         status: str = "available",
     ) -> Result[Equipment]:
         try:
-            assert_permission(actor_role, "appointments:write")
+            assert_permission(actor_role, "operations:write")
             require_non_empty(name, "name")
             now = datetime.now(UTC)
             item = Equipment(

@@ -3,7 +3,7 @@ from src_v2.shared.errors import AuthorizationError
 
 ROLE_PERMISSIONS: dict[str, set[str]] = {
     "admin": {"*"},
-    "doctor": {"patients:read", "appointments:read", "appointments:write", "billing:read"},
+    "doctor": {"patients:read", "appointments:read", "appointments:write", "billing:read", "clinical:write"},
     "staff": {"patients:read", "appointments:read"},
     "receptionist": {"patients:read", "patients:write", "appointments:read", "appointments:write", "billing:read", "billing:write"},
 }

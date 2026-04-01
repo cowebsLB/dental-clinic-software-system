@@ -29,7 +29,7 @@ class ClinicalService:
         instructions: str = "",
     ) -> Result[Prescription]:
         try:
-            assert_permission(actor_role, "appointments:write")
+            assert_permission(actor_role, "clinical:write")
             require_non_empty(patient_id, "patient_id")
             require_non_empty(doctor_id, "doctor_id")
             require_non_empty(medication, "medication")
@@ -59,7 +59,7 @@ class ClinicalService:
         note: str,
     ) -> Result[ClinicalNote]:
         try:
-            assert_permission(actor_role, "appointments:write")
+            assert_permission(actor_role, "clinical:write")
             require_non_empty(note, "note")
             if not self._patients.get(patient_id):
                 return Result.failure("Patient not found")
